@@ -1,0 +1,39 @@
+# Python source artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Distribution / Install artifacts (created by pip install -e .)
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# PyTorch / Model Checkpoints
+*.pt
+*.pth
+checkpoints/
+
+# Generated Visualizations
+*.gif
+*.png
+*.mp4
+
+# Datasets (PyGSP often downloads data locally)
+data/
+pygsp_data/
+
+# OS specific
+.DS_Store
+
+# IDE settings
+.vscode/
+.idea/
