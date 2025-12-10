@@ -1,9 +1,9 @@
 from .conv import GNCAConv
 from .model import GNCAModel
-from .cache import SamplePool
+from .cache import StateCache
 
 __all__ = [
     'GNCAConv',
     'GNCAModel',
-    'SamplePool',
+    'StateCache',
 ]

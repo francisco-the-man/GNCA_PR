@@ -4,7 +4,7 @@ import numpy as np
 import os
 import gc
 from pygsp.graphs import Bunny
-from gnca import GNCAModel, SamplePool
+from gnca import GNCAModel, StateCache
 
 
 
@@ -87,7 +87,7 @@ def train():
 
     # sample pool to store previous states to prevent catastrophic forgetting
     # this is the "cache" from the paper
-    pool = SamplePool(POOL_SIZE, seed_state) 
+    pool = StateCache(POOL_SIZE, seed_state) 
     
     print(f"STARTING TRAINING ON {device} (Accumulating {ACCUM_STEPS} steps)...", flush=True)
     

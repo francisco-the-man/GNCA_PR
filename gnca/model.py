@@ -9,9 +9,9 @@ class GNCAModel(nn.Module):
     This model implements the three-part update rule described in 
     Appendix A.2 of the paper:
     
-    1. **Pre-processing:** :math:`h_i \leftarrow \text{MLP}_{\text{pre}}(s_i)`
-    2. **Message Passing:** :math:`h_i \leftarrow h_i \, \| \, \sum_{j \in \mathcal{N}(i)} \text{ReLU}(\mathbf{W} h_j + \mathbf{b})`
-    3. **Post-processing:** :math:`s_i' \leftarrow \text{MLP}_{\text{post}}(h_i)`
+    1. Pre-processing: :math:`h_i \leftarrow \text{MLP}_{\text{pre}}(s_i)`
+    2. Message Passing: :math:`h_i \leftarrow h_i \, \| \, \sum_{j \in \mathcal{N}(i)} \text{ReLU}(\mathbf{W} h_j + \mathbf{b})`
+    3. Post-processing: :math:`s_i' \leftarrow \text{MLP}_{\text{post}}(h_i)`
 
     Args:
         input_channels (int): Dimensionality of the input state space (e.g., 2 for 2D coords).
