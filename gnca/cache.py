@@ -5,7 +5,8 @@ class StateCache:
     """
     Stores states of GNCA model for replay memory
     """
-    def __init__(self, size=1024, initial_state):
+    def __init__(self, size, initial_state):
+        self.size = size
         # Store initial_state to be used for resets
         # Ensure we clone it so we don't modify the original reference
         self.init_state = initial_state
