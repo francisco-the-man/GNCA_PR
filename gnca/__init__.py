@@ -1,6 +1,6 @@
 from .conv import GNCAConv
 from .model import GNCAModel
-from .buffer import SamplePool
+from .cache import SamplePool
 
 __all__ = [
     'GNCAConv',
