@@ -121,7 +121,7 @@ def train():
             loss.backward() # backpropagate the loss through the model (over all steps)
             
             epoch_loss += loss.item()
-            pool.commit(batch_idx, x.detach())
+            pool.update(batch_idx, x.detach())
 
         # Optimizer Step
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)

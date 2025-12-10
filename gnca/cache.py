@@ -19,7 +19,7 @@ class StateCache:
         batch = [self.cache[i] for i in idxs]
         
         # Stack them into one tensor for the model
-        return torch.stack(batch), idxs
+        return idxs, torch.stack(batch)
 
     def update(self, idxs, new_states):
         """
