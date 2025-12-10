@@ -49,6 +49,8 @@ def train():
     PHYSICAL_BATCH_SIZE = 1
     ACCUM_STEPS = TARGET_BATCH_SIZE // PHYSICAL_BATCH_SIZE
     
+    # training hyperparameters (seem to work well)
+    # increasing learning rate makes things unstable
     LR = 0.001
     POOL_SIZE = 1024
     N_EPOCHS = 2000
@@ -58,7 +60,7 @@ def train():
     target_pos = target_pos.to(device)
     edge_index = edge_index.to(device)
     num_nodes = target_pos.size(0)
-    # init seed state $\bar{s}_i = \hat{s}_i / ||\hat{s}_i||$
+    # init seed state (normed) $\bar{s}_i = \hat{s}_i / ||\hat{s}_i||$
     seed_state = sphericalize_state(target_pos)
 
     # batched edge index
@@ -131,6 +133,7 @@ def train():
         # Logging checkpoints
         if epoch % 50 == 0 or epoch < 10:
             delta_mag = delta.abs().mean().item()
+            # keep an eye on delta mean (if it gets too big, it means the model is diverging)
             print(f"Epoch {epoch} | Loss: {epoch_loss:.6f} | Delta Mean: {delta_mag:.6f}", flush=True)
             
             if epoch % 50 == 0:

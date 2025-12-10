@@ -7,7 +7,8 @@ import numpy as np
 
 from gnca import GNCAModel
 
-def get_bunny_edges():
+def get_graph_edges():
+    # same as in growing_shapes.py
     graph = Bunny()
     rows, cols = graph.W.nonzero()
     edge_index = torch.tensor(np.array([rows, cols]), dtype=torch.long)
@@ -15,18 +16,18 @@ def get_bunny_edges():
     return pos, edge_index
 
 def visualize():
-    # Setup
-    device = torch.device('cpu') # Visualization is fast enough on CPU
-    pos, edge_index = get_bunny_edges()
+    # setup (this is for when using colab)
+    device = torch.device('cpu')
+    pos, edge_index = get_graph_edges()
     
-    # Normalize target exactly as in training
+    # normalize target exactly as in the training
     target_mean = pos.mean(dim=0)
     target_scale = pos.abs().max()
     
     # Initial seed (collapsed state)
+    # I.e. very close to zero (the mean) but slightly biased in the direction of pos
     current_state = ((pos - target_mean) / target_scale) * 0.01
     
-    # Load Model
     model = GNCAModel(input_channels=3, output_channels=3, output_activation='tanh')
     model.load_state_dict(torch.load('checkpoints/bunny_gnca.pt', map_location=device))
     model.eval()
@@ -34,40 +35,8 @@ def visualize():
     # Setup Plot
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlim(-1, 1)
-    ax.set_ylim(-1, 1)
-    ax.set_zlim(-1, 1)
-    ax.set_title("GNCA Bunny Convergence")
     
-    # Storage for animation frames
-    frames = []
-    
-    # Simulation Loop
-    steps = 60
-    with torch.no_grad():
-        for i in range(steps):
-            # Visualization update
-            ax.clear()
-            ax.set_xlim(-1, 1); ax.set_ylim(-1, 1); ax.set_zlim(-1, 1)
-            ax.set_title(f"Step {i}")
-            
-            # Plot current point cloud
-            np_state = current_state.numpy()
-            scat = ax.scatter(np_state[:, 0], np_state[:, 1], np_state[:, 2], 
-                              c='purple', s=5, alpha=0.6)
-            
-            # Capture frame for GIF
-            # Note: Matplotlib animation requires a function update, 
-            # but simpler approach for scripts is usually to save images or use FuncAnimation.
-            # We will use FuncAnimation logic below instead of this loop structure 
-            # if we want to display live, but here is the logic for the update.
-            
-            # Evolution Step
-            delta = model(current_state, edge_index)
-            current_state = current_state + delta
-            current_state = torch.clamp(current_state, -1.0, 1.0)
-
-    # To actually save the GIF, we use FuncAnimation
+    # update function for the animation
     def update(frame):
         nonlocal current_state
         ax.clear()
@@ -79,18 +48,15 @@ def visualize():
                    c=np_state[:, 2], cmap='viridis', s=10) # Color by Z-height
         
         # Evolve
-        delta = model(current_state, edge_index)
+        delta = model(current_state, edge_index) # unrolling
         current_state = current_state + delta
         current_state = torch.clamp(current_state, -1.0, 1.0)
         
         return ax,
-
-    # Reset state for animation
-    current_state = ((pos - target_mean) / target_scale) * 0.01
     
     ani = animation.FuncAnimation(fig, update, frames=60, interval=100)
     ani.save('bunny_growth.gif', writer='pillow', fps=10)
-    print("Saved bunny_growth.gif")
+    print("Saved gif")
 
 if __name__ == '__main__':
     visualize()

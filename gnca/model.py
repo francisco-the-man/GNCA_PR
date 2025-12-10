@@ -25,6 +25,7 @@ class GNCAModel(nn.Module):
     def __init__(self, 
                  input_channels: int, 
                  output_channels: int,
+                 edge_dim: int = 0,
                  hidden_channels: int = 256,
                  output_activation: Optional[str] = 'tanh'):
         super().__init__()
@@ -43,8 +44,8 @@ class GNCAModel(nn.Module):
         # Input size is hidden_channels (from mlp_pre).
         # Output size of the convolution message is hidden_channels.
         # The layer itself handles the concatenation, resulting in 2 * hidden_channels.
-        self.conv = GNCAConv(hidden_channels, hidden_channels)
-
+        self.conv = GNCAConv(hidden_channels, hidden_channels, edge_dim=edge_dim)
+        
         # 3. Post-processing MLP
         # Input is 2 * hidden_channels because GNCAConv concatenates [self || neighbor_agg]
         self.mlp_post = nn.Sequential(
@@ -55,7 +56,7 @@ class GNCAModel(nn.Module):
 
         self.output_activation = output_activation
 
-    def forward(self, x, edge_index):
+    def forward(self, x, edge_index, edge_attr: Optional[torch.Tensor] = None):
         r"""
         Calculates the update delta (i.e. next state for the cellular automaton).
 
@@ -71,7 +72,7 @@ class GNCAModel(nn.Module):
 
         # 2. Evolve hidden representation using GNCAConv
         # Returns shape [N, 2 * hidden_channels]
-        h = self.conv(h, edge_index)
+        h = self.conv(h, edge_index, edge_attr=edge_attr)
 
         # 3. Post-process to get the update/next state
         out = self.mlp_post(h)
