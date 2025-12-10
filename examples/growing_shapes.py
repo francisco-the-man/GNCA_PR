@@ -22,6 +22,7 @@ def get_bunny_data():
     return pos, edge_index
 
 def train():
+    print("Initializing script...", flush=True)
     # Detect device (with MPS support for Mac, CUDA for Colab)
     if torch.cuda.is_available():
         device = torch.device('cuda')
