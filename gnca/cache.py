@@ -2,10 +2,10 @@ import torch
 import numpy as np
 
 class StateCache:
-    """.
-    Stores states of GNCA and handles the Section 4.3 logic internally.
     """
-    def __init__(self, initial_state, size=1024):
+    Stores states of GNCA model for replay memory
+    """
+    def __init__(self, size=1024, initial_state):
         # Store initial_state to be used for resets
         # Ensure we clone it so we don't modify the original reference
         self.init_state = initial_state
@@ -15,11 +15,10 @@ class StateCache:
         """Returns batch of states and the indices used."""
         # Randomly select indices
         idxs = torch.randint(0, len(self.cache), (count,))
-        
-        # List comprehension to retrieve items (Standard list indexing)
         batch = [self.cache[i] for i in idxs]
         
-        return batch, idxs
+        # Stack them into one tensor for the model
+        return torch.stack(batch), idxs
 
     def update(self, idxs, new_states):
         """
